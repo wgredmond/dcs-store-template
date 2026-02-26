@@ -1,6 +1,6 @@
 "use client";
 
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import Image from "next/image";
 import { use, useState } from "react";
 import { getProductBySlug, formatPrice } from "@/lib/products";
@@ -12,6 +12,7 @@ export default function ProductDetailPage({
 }) {
   const { slug } = use(params);
   const product = getProductBySlug(slug);
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,13 +82,21 @@ export default function ProductDetailPage({
           <p className="mt-4 text-sm text-red-600">{error}</p>
         )}
 
-        <button
-          onClick={handleCheckout}
-          disabled={loading}
-          className="mt-8 w-full rounded-lg bg-gray-900 px-6 py-4 text-white font-medium hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {loading ? "Redirecting to checkout…" : "Buy Now"}
-        </button>
+        <div className="mt-8 flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={handleCheckout}
+            disabled={loading}
+            className="flex-1 rounded-lg bg-gray-900 px-6 py-4 text-white font-medium hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {loading ? "Redirecting…" : "Buy Now with Stripe"}
+          </button>
+          <button
+            onClick={() => router.push(`/checkout/dcs?product=${product!.slug}`)}
+            className="flex-1 rounded-lg bg-blue-600 px-6 py-4 text-white font-medium hover:bg-blue-700 transition-colors"
+          >
+            Buy Now with DCS Checkout
+          </button>
+        </div>
 
         <a
           href="/"
