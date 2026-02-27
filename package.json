@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "register:webhook": "tsx scripts/registerWebhook.ts"
   },
   "dependencies": {
     "@stripe/stripe-js": "^4.0.0",
@@ -27,6 +28,7 @@
     "eslint": "^9",
     "eslint-config-next": "^15",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
