@@ -6,7 +6,7 @@
  *
  * Reads from .env.local:
  *   WALLEYONE_URL       — base URL of your walleyone instance
- *   DCS_INTERNAL_TOKEN    — internal auth token for walleyone
+ *   WALLEYONE_INTERNAL_TOKEN    — internal auth token for walleyone
  *   NEXT_PUBLIC_BASE_URL  — public URL of this store (used to construct the webhook endpoint)
  *
  * On success, prints the `whsec_` signing secret.
@@ -46,7 +46,7 @@ async function main() {
   const env = loadEnv();
 
   const runtimeUrl = env["WALLEYONE_URL"];
-  const internalToken = env["DCS_INTERNAL_TOKEN"];
+  const internalToken = env["WALLEYONE_INTERNAL_TOKEN"];
   const baseUrl = env["NEXT_PUBLIC_BASE_URL"];
 
   if (!runtimeUrl) {
@@ -54,7 +54,7 @@ async function main() {
     process.exit(1);
   }
   if (!internalToken) {
-    console.error("Error: DCS_INTERNAL_TOKEN is not set in .env.local");
+    console.error("Error: WALLEYONE_INTERNAL_TOKEN is not set in .env.local");
     process.exit(1);
   }
   if (!baseUrl) {
