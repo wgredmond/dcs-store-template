@@ -1,4 +1,4 @@
-// Vendored from dcs-runtime — replace with:
+// Vendored from walleyone — replace with:
 //   import { verifySignature } from '@decomm/webhooks'
 // once the npm package is published.
 //

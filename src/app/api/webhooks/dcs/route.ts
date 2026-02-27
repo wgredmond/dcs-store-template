@@ -50,7 +50,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // 5. Handle event types ─────────────────────────────────────────────────────
   //
   //    Return 200 immediately — don't await slow operations (fulfillment, email,
-  //    DB writes). Push those to a background queue so dcs-runtime doesn't
+  //    DB writes). Push those to a background queue so walleyone doesn't
   //    time out and retry unnecessarily.
   //
   switch (event.type) {
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     default: {
-      // Unknown event type — log and ignore. dcs-runtime may add event types
+      // Unknown event type — log and ignore. walleyone may add event types
       // in future versions; unrecognised types should not cause a 4xx.
       const unknownType = (event as WebhookEvent).type;
       console.log("[webhook] unhandled event type:", unknownType);
@@ -91,6 +91,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   // 6. Acknowledge receipt ─────────────────────────────────────────────────────
-  //    dcs-runtime retries on non-2xx. Return 200 quickly; do real work async.
+  //    walleyone retries on non-2xx. Return 200 quickly; do real work async.
   return NextResponse.json({ received: true });
 }
