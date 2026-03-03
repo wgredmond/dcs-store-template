@@ -1,4 +1,4 @@
-// Vendored from walleyone — replace with:
+// Vendored from walleyeone — replace with:
 //   import { verifySignature } from '@decomm/webhooks'
 // once the npm package is published.
 //

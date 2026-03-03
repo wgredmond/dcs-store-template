@@ -10,22 +10,36 @@ type PaymentOrder = {
   id: string;
   status: string;
   amountCents: number;
-  txHash?: string;
-  createdAt?: string;
+  paymentTxHash: string | null;
+  chainId: number;
+  tokenAddress: string;
+  orderNumber: string | null;
+  shipTo: string | null;
+  items: Array<{ sku?: string; name?: string; quantity?: number }> | null;
+  createdAt: string;
 };
 
 type Notification = {
   id: string;
   type: string;
-  orderId?: string;
-  txHash?: string;
-  createdAt?: string;
-  details?: Record<string, unknown>;
+  title: string;
+  message: string | null;
+  data?: Record<string, unknown> | null;
+  source: string | null;
+  sourceId: string | null;
+  chainId: number;
+  txHash: string | null;
+  blockNumber: string | null;
+  sequence: string | null;
+  createdAt: string;
 };
 
 type WalletOverview = {
-  orders?: PaymentOrder[];
+  paymentOrders?: PaymentOrder[];
   notifications?: Notification[];
+  preOrders?: unknown[];
+  payments?: unknown[];
+  refunds?: unknown[];
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -129,8 +143,8 @@ export default function MyWalletPage() {
                     }`}
                   >
                     {tab}
-                    {tab === "orders" && overview.orders?.length
-                      ? ` (${overview.orders.length})`
+                    {tab === "orders" && overview.paymentOrders?.length
+                      ? ` (${overview.paymentOrders.length})`
                       : ""}
                     {tab === "notifications" && overview.notifications?.length
                       ? ` (${overview.notifications.length})`
@@ -142,13 +156,13 @@ export default function MyWalletPage() {
               {/* Orders tab */}
               {activeTab === "orders" && (
                 <div>
-                  {!overview.orders?.length ? (
+                  {!overview.paymentOrders?.length ? (
                     <p className="text-sm text-gray-500 text-center py-8">
                       No orders found.
                     </p>
                   ) : (
                     <ul className="space-y-3">
-                      {overview.orders.map((order) => (
+                      {overview.paymentOrders.map((order) => (
                         <li
                           key={order.id}
                           className="rounded-lg border border-gray-200 p-4"
@@ -156,27 +170,25 @@ export default function MyWalletPage() {
                           <div className="flex items-start justify-between gap-4">
                             <div>
                               <p className="font-mono text-xs text-gray-500 mb-1">
-                                {order.id}
+                                {order.orderNumber ?? order.id}
                               </p>
                               <p className="font-medium text-gray-900">
                                 {formatCents(order.amountCents)}
                               </p>
-                              {order.createdAt && (
-                                <p className="text-xs text-gray-400 mt-0.5">
-                                  {new Date(order.createdAt).toLocaleDateString()}
-                                </p>
-                              )}
+                              <p className="text-xs text-gray-400 mt-0.5">
+                                {new Date(order.createdAt).toLocaleDateString()}
+                              </p>
                             </div>
                             <StatusBadge status={order.status} />
                           </div>
-                          {order.txHash && (
+                          {order.paymentTxHash && (
                             <a
-                              href={`${paymentChainConfig.explorerTxUrlPrefix}${order.txHash}`}
+                              href={`${paymentChainConfig.explorerTxUrlPrefix}${order.paymentTxHash}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="mt-2 inline-block text-xs text-blue-600 hover:underline font-mono"
                             >
-                              {order.txHash.slice(0, 10)}…{order.txHash.slice(-8)} ↗
+                              {order.paymentTxHash.slice(0, 10)}…{order.paymentTxHash.slice(-8)} ↗
                             </a>
                           )}
                         </li>
@@ -210,10 +222,9 @@ export default function MyWalletPage() {
                               </span>
                             )}
                           </div>
-                          {notif.orderId && (
-                            <p className="text-xs text-gray-500 mb-1">
-                              Order: <span className="font-mono">{notif.orderId}</span>
-                            </p>
+                          <p className="text-sm font-medium text-gray-900 mb-0.5">{notif.title}</p>
+                          {notif.message && (
+                            <p className="text-xs text-gray-600 mb-1">{notif.message}</p>
                           )}
                           {notif.txHash && (
                             <a

@@ -5,9 +5,9 @@
  *   npm run register:webhook
  *
  * Reads from .env.local:
- *   WALLEYONE_URL       — base URL of your walleyone instance
- *   WALLEYONE_INTERNAL_TOKEN    — internal auth token for walleyone
- *   NEXT_PUBLIC_BASE_URL  — public URL of this store (used to construct the webhook endpoint)
+ *   WALLEYONE_URL          — base URL of your walleyeone instance
+ *   WALLEYONE_API_KEY      — wl_test_sk_... API key for your storefront environment
+ *   NEXT_PUBLIC_BASE_URL   — public URL of this store (used to construct the webhook endpoint)
  *
  * On success, prints the `whsec_` signing secret.
  * Add it to .env.local as:
@@ -46,15 +46,15 @@ async function main() {
   const env = loadEnv();
 
   const runtimeUrl = env["WALLEYONE_URL"];
-  const internalToken = env["WALLEYONE_INTERNAL_TOKEN"];
+  const apiKey = env["WALLEYONE_API_KEY"];
   const baseUrl = env["NEXT_PUBLIC_BASE_URL"];
 
   if (!runtimeUrl) {
     console.error("Error: WALLEYONE_URL is not set in .env.local");
     process.exit(1);
   }
-  if (!internalToken) {
-    console.error("Error: WALLEYONE_INTERNAL_TOKEN is not set in .env.local");
+  if (!apiKey) {
+    console.error("Error: WALLEYONE_API_KEY is not set in .env.local");
     process.exit(1);
   }
   if (!baseUrl) {
@@ -65,7 +65,7 @@ async function main() {
   const webhookUrl = `${baseUrl}/api/webhooks/dcs`;
   const events = ["payment_confirmed", "payment_failed", "payment_expired"];
 
-  // walleyone enforces https:// for webhook URLs to prevent plaintext secret
+  // walleyeone enforces https:// for webhook URLs to prevent plaintext secret
   // transmission. For local development, use a tunnel tool to get a public HTTPS URL:
   //   ngrok:              ngrok http 3009
   //   Cloudflare Tunnel:  cloudflared tunnel --url http://localhost:3009
@@ -92,14 +92,14 @@ async function main() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-internal-token": internalToken,
+      "x-api-key": apiKey,
     },
     body: JSON.stringify({ url: webhookUrl, events }),
   });
 
   if (!res.ok) {
     const text = await res.text();
-    console.error(`Error: walleyone returned ${res.status}`);
+    console.error(`Error: walleyeone returned ${res.status}`);
     console.error(text);
     process.exit(1);
   }
@@ -107,7 +107,7 @@ async function main() {
   const data = (await res.json()) as { secret?: string; id?: string };
 
   if (!data.secret) {
-    console.error("Error: walleyone response did not include a secret:", data);
+    console.error("Error: walleyeone response did not include a secret:", data);
     process.exit(1);
   }
 

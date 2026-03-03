@@ -1,5 +1,5 @@
 const RUNTIME_URL = process.env.WALLEYONE_URL?.replace(/\/$/, "");
-const INTERNAL_TOKEN = process.env.WALLEYONE_INTERNAL_TOKEN ?? "";
+const API_KEY = process.env.WALLEYONE_API_KEY ?? "";
 
 export async function callRuntime(
   path: string,
@@ -11,7 +11,7 @@ export async function callRuntime(
     headers: {
       "Content-Type": "application/json",
       ...(init.headers as Record<string, string>),
-      "x-internal-token": INTERNAL_TOKEN,
+      "x-api-key": API_KEY,
     },
   });
 }
